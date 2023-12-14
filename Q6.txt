@@ -1,0 +1,111 @@
+#include <iostream>
+using namespace std;
+
+const int MAX_SIZE = 5;
+
+class CircularQueue {
+private:
+    int front, rear;
+    int arr[MAX_SIZE];
+
+public:
+    CircularQueue() {
+        front = -1;
+        rear = -1;
+    }
+
+    bool isFull() {
+        return (front == 0 && rear == MAX_SIZE - 1) || (rear == (front - 1) % (MAX_SIZE - 1));
+    }
+
+    bool isEmpty() {
+        return front == -1;
+    }
+
+    void enqueue(int item) {
+        if (isFull()) {
+            cout << "Queue is full. Cannot enqueue.\n";
+            return;
+        } else if (isEmpty()) {
+            front = rear = 0;
+        } else {
+            rear = (rear + 1) % MAX_SIZE;
+        }
+        arr[rear] = item;
+        cout << item << " enqueued to the queue.\n";
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue is empty. Cannot dequeue.\n";
+            return -1;
+        }
+
+        int item = arr[front];
+        if (front == rear) {
+            front = rear = -1;
+        } else {
+            front = (front + 1) % MAX_SIZE;
+        }
+        cout << item << " dequeued from the queue.\n";
+        return item;
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        cout << "Elements in the circular queue are: ";
+        if (rear >= front) {
+            for (int i = front; i <= rear; i++)
+                cout << arr[i] << " ";
+        } else {
+            for (int i = front; i < MAX_SIZE; i++)
+                cout << arr[i] << " ";
+
+            for (int i = 0; i <= rear; i++)
+                cout << arr[i] << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    CircularQueue cq;
+int choice;
+    do {
+        cout << "\nCircular Queue Operations:\n"
+             << "1. Enqueue\n"
+             << "2. Dequeue\n"
+             << "3. Display\n"
+             << "4. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int data;
+                cout << "Enter data to enqueue: ";
+                cin >> data;
+                cq.enqueue(data);
+                break;
+            }
+            case 2:
+                cq.dequeue();
+                break;
+            case 3:
+                cq.display();
+                break;
+            case 4:
+                cout << "Exiting the program...\n";
+                break;
+            default:
+                cout << "Invalid choice! Please enter a valid option.\n";
+        }
+    } while (choice != 4);
+
+
+    return 0;
+}

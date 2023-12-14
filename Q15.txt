@@ -1,0 +1,147 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+// Student structure to hold student information
+struct Student {
+    int rollNo;
+    char name[50];
+    char division;
+    char address[100];
+};
+
+// Function to add a new student record to the file
+void addStudentRecord() {
+    ofstream outFile;
+    outFile.open("students.dat", ios::binary | ios::app);
+
+    Student newStudent;
+
+    cout << "Enter Roll Number: ";
+    cin >> newStudent.rollNo;
+    cin.ignore();
+
+    cout << "Enter Name: ";
+    cin.getline(newStudent.name, 50);
+
+    cout << "Enter Division: ";
+    cin >> newStudent.division;
+
+    cout << "Enter Address: ";
+    cin.ignore();
+    cin.getline(newStudent.address, 100);
+
+    outFile.write(reinterpret_cast<char*>(&newStudent), sizeof(Student));
+    outFile.close();
+
+    cout << "Student record added successfully!" << endl;
+}
+
+// Function to display details of a specific student based on the roll number
+void displayStudentRecord(int rollNumber) {
+    ifstream inFile;
+    inFile.open("students.dat", ios::binary);
+
+    if (!inFile) {
+        cout << "File not found or unable to open!" << endl;
+        return;
+    }
+
+    Student currentStudent;
+    bool found = false;
+
+    while (inFile.read(reinterpret_cast<char*>(&currentStudent), sizeof(Student))) {
+        if (currentStudent.rollNo == rollNumber) {
+            cout << "Roll Number: " << currentStudent.rollNo << endl;
+            cout << "Name: " << currentStudent.name << endl;
+            cout << "Division: " << currentStudent.division << endl;
+            cout << "Address: " << currentStudent.address << endl;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Student record with Roll Number " << rollNumber << " not found." << endl;
+    }
+
+    inFile.close();
+}
+
+// Function to delete a student record based on the roll number
+void deleteStudentRecord(int rollNumber) {
+    ifstream inFile;
+    inFile.open("students.dat", ios::binary);
+
+    if (!inFile) {
+        cout << "File not found or unable to open!" << endl;
+        return;
+    }
+
+    ofstream outFile;
+    outFile.open("temp.dat", ios::binary);
+
+    Student currentStudent;
+    bool found = false;
+
+    while (inFile.read(reinterpret_cast<char*>(&currentStudent), sizeof(Student))) {
+        if (currentStudent.rollNo != rollNumber) {
+            outFile.write(reinterpret_cast<char*>(&currentStudent), sizeof(Student));
+        } else {
+            found = true;
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove("students.dat");
+    rename("temp.dat", "students.dat");
+
+    if (found) {
+        cout << "Student record with Roll Number " << rollNumber << " deleted successfully!" << endl;
+    } else {
+        cout << "Student record with Roll Number " << rollNumber << " not found." << endl;
+    }
+}
+
+int main() {
+    int choice;
+    int rollNumber;
+
+    do {
+        cout << "\n************ Student Database Management ************" << endl;
+        cout << "1. Add Student Record" << endl;
+        cout << "2. Display Student Record" << endl;
+        cout << "3. Delete Student Record" << endl;
+        cout << "4. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addStudentRecord();
+                break;
+            case 2:
+                cout << "Enter Roll Number to display student details: ";
+                cin >> rollNumber;
+                displayStudentRecord(rollNumber);
+                break;
+            case 3:
+                cout << "Enter Roll Number to delete student record: ";
+                cin >> rollNumber;
+                deleteStudentRecord(rollNumber);
+                break;
+            case 4:
+                cout << "Exiting the program..." << endl;
+                break;
+            default:
+                cout << "Invalid choice! Please enter a valid option." << endl;
+                break;
+        }
+    } while (choice != 4);
+
+    return 0;
+}

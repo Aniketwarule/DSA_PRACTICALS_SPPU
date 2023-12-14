@@ -1,0 +1,95 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+struct Student {
+    int rollNo;
+    string name;
+    float SGPA;
+};
+
+void swapStudents(Student &a, Student &b) {
+    Student temp = a;
+    a = b;
+    b = temp;
+}
+
+void sortByRollNo(Student students[], int n) {
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (students[j].rollNo > students[j + 1].rollNo) {
+                swapStudents(students[j], students[j + 1]);
+            }
+        }
+    }
+}
+
+// Function to perform Insertion Sort based on names
+void sortByName(Student students[], int n) {
+    for (int i = 1; i < n; ++i) {
+        Student key = students[i];
+        int j = i - 1;
+
+        while (j >= 0 && students[j].name > key.name) {
+            students[j + 1] = students[j];
+            j = j - 1;
+        }
+        students[j + 1] = key;
+    }
+}
+
+int main() {
+    const int MAX_STUDENTS = 10;
+    Student students[MAX_STUDENTS];
+
+    int choice = 0;
+    int numStudents = 0;
+
+    while (true) {
+        cout << "1. Add Student\n2. Sort by Roll No (Bubble Sort)\n3. Sort by Name (Insertion Sort)\n4. Exit\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (numStudents < MAX_STUDENTS) {
+                    cout << "Enter Roll No: ";
+                    cin >> students[numStudents].rollNo;
+                    cout << "Enter Name: ";
+                    cin.ignore();
+                    getline(cin, students[numStudents].name);
+                    cout << "Enter SGPA: ";
+                    cin >> students[numStudents].SGPA;
+                    numStudents++;
+                } else {
+                    cout << "Maximum limit reached!\n";
+                }
+                break;
+
+            case 2:
+                sortByRollNo(students, numStudents);
+                cout << "Sorted by Roll No (Ascending Order):\n";
+                for (int i = 0; i < numStudents; ++i) {
+                    cout << students[i].rollNo << "\t" << students[i].name << "\t" << students[i].SGPA << endl;
+                }
+                break;
+
+            case 3:
+                sortByName(students, numStudents);
+                cout << "Sorted by Name (Alphabetically):\n";
+                for (int i = 0; i < numStudents; ++i) {
+                    cout << students[i].rollNo << "\t" << students[i].name << "\t" << students[i].SGPA << endl;
+                }
+                break;
+
+            case 4:
+                cout << "Exiting the program...\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice! Please enter a valid option.\n";
+        }
+    }
+
+    return 0;
+}

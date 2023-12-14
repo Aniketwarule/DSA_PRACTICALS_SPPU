@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+struct Student {
+    int rollNo;
+    string name;
+    float SGPA;
+};
+
+
+void searchByName(Student students[], int n, string searchName) {
+    int left = 0, right = n - 1;
+    bool found = false;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (students[mid].name == searchName) {
+            found = true;
+            cout << students[mid].rollNo << "\t" << students[mid].name << "\t" << students[mid].SGPA << endl;
+            break;
+        } else if (students[mid].name < searchName) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    if (!found) {
+        cout << "No records found for " << searchName << endl;
+    }
+}
+
+int main() {
+    const int MAX_STUDENTS = 15;
+    Student students[MAX_STUDENTS];
+    int numStudents = 0;
+
+    while (true) {
+        cout << "1. Add Student\n2. Search by Name\n3. Exit\nEnter your choice: ";
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (numStudents < MAX_STUDENTS) {
+                    cout << "Enter Roll No: ";
+                    cin >> students[numStudents].rollNo;
+                    cout << "Enter Name: ";
+                    cin>>students[numStudents].name;
+                    cout << "Enter SGPA: ";
+                    cin >> students[numStudents].SGPA;
+                    numStudents++;
+                } else {
+                    cout << "Maximum limit reached!\n";
+                }
+                break;
+
+            case 2:
+                if (numStudents > 0) {
+                    string searchName;
+                    cout << "Enter Name to search: ";
+                    cin>>searchName;
+                    searchByName(students, numStudents, searchName);
+                } else {
+                    cout << "No students in the database!\n";
+                }
+                break;
+
+            case 3:
+                cout << "Exiting the program...\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice! Please enter a valid option.\n";
+        }
+    }
+
+    return 0;
+}

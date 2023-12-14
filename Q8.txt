@@ -1,0 +1,143 @@
+#include <iostream>
+#include <stack>
+#include <cctype>
+using namespace std;
+
+// Structure for a tree node
+struct TreeNode {
+    char data;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(char value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+// Function to check if a character is an operand
+bool isOperand(char c) {
+    return isalnum(c);
+}
+
+// Function to build an expression tree from a prefix expression
+TreeNode* buildExpressionTree(string prefix) {
+    stack<TreeNode*> st;
+
+    for (int i = prefix.size() - 1; i >= 0; --i) {
+        char c = prefix[i];
+        if (isOperand(c)) {
+            TreeNode* newNode = new TreeNode(c);
+            st.push(newNode);
+        } else {
+            TreeNode* operand1 = st.top();
+            st.pop();
+            TreeNode* operand2 = st.top();
+            st.pop();
+
+            TreeNode* newNode = new TreeNode(c);
+            newNode->left = operand1;
+            newNode->right = operand2;
+
+            st.push(newNode);
+        }
+    }
+
+    return st.top();
+}
+
+// Recursive In-order traversal of an expression tree
+void recursiveInorder(TreeNode* root) {
+    if (root != nullptr) {
+        recursiveInorder(root->left);
+        cout << root->data << " ";
+        recursiveInorder(root->right);
+    }
+}
+
+// Non-recursive In-order traversal of an expression tree
+void nonRecursiveInorder(TreeNode* root) {
+    stack<TreeNode*> st;
+    TreeNode* current = root;
+
+    while (current != nullptr || !st.empty()) {
+        while (current != nullptr) {
+            st.push(current);
+            current = current->left;
+        }
+
+        current = st.top();
+        st.pop();
+        cout << current->data << " ";
+        current = current->right;
+    }
+}
+
+// Recursive Pre-order traversal of an expression tree
+void recursivePreorder(TreeNode* root) {
+    if (root != nullptr) {
+        cout << root->data << " ";
+        recursivePreorder(root->left);
+        recursivePreorder(root->right);
+    }
+}
+
+// Recursive Post-order traversal of an expression tree
+void recursivePostorder(TreeNode* root) {
+    if (root != nullptr) {
+        recursivePostorder(root->left);
+        recursivePostorder(root->right);
+        cout << root->data << " ";
+    }
+}
+
+int main() {
+    string prefixExp;
+    cout << "Enter a prefix expression: ";
+    getline(cin, prefixExp);
+
+    TreeNode* root = buildExpressionTree(prefixExp);
+
+    int choice;
+    do {
+        cout << "\nExpression Tree Traversals:\n"
+             << "1. Recursive In-order\n"
+             << "2. Non-recursive In-order\n"
+             << "3. Recursive Pre-order\n"
+             << "4. Recursive Post-order\n"
+             << "5. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Recursive In-order traversal: ";
+                recursiveInorder(root);
+                cout << endl;
+                break;
+
+            case 2:
+                cout << "Non-recursive In-order traversal: ";
+                nonRecursiveInorder(root);
+                cout << endl;
+                break;
+
+            case 3:
+                cout << "Recursive Pre-order traversal: ";
+                recursivePreorder(root);
+                cout << endl;
+                break;
+
+            case 4:
+                cout << "Recursive Post-order traversal: ";
+                recursivePostorder(root);
+                cout << endl;
+                break;
+
+            case 5:
+                cout << "Exiting the program...\n";
+                break;
+
+            default:
+                cout << "Invalid choice! Please enter a valid option.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}

@@ -1,0 +1,122 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Structure to hold student information
+struct Student {
+    int rollNo;
+    string name;
+    float SGPA;
+};
+
+// Function to swap two student records
+void swapStudents(Student &a, Student &b) {
+    Student temp = a;
+    a = b;
+    b = temp;
+}
+
+// Partition function for Quick Sort
+int partition(Student students[], int low, int high) {
+    float pivot = students[high].SGPA;
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (students[j].SGPA >= pivot) {
+            i++;
+            swapStudents(students[i], students[j]);
+        }
+    }
+    swapStudents(students[i + 1], students[high]);
+    return i + 1;
+}
+
+// Quick Sort algorithm
+void quickSort(Student students[], int low, int high) {
+    if (low < high) {
+        int pi = partition(students, low, high);
+        quickSort(students, low, pi - 1);
+        quickSort(students, pi + 1, high);
+    }
+}
+
+// Function to find top ten students based on SGPA
+void findTopTen(Student students[], int n) {
+    quickSort(students, 0, n - 1);
+    cout << "Top Ten Students:\n";
+    for (int i = 0; i < min(10, n); ++i) {
+        cout << students[i].rollNo << "\t" << students[i].name << "\t" << students[i].SGPA << endl;
+    }
+}
+
+// Function to search students by SGPA
+void searchBySGPA(Student students[], int n, float sgpa) {
+    bool found = false;
+    cout << "Students with SGPA " << sgpa << ":\n";
+    for (int i = 0; i < n; ++i) {
+        if (students[i].SGPA == sgpa) {
+            cout << students[i].rollNo << "\t" << students[i].name << "\t" << students[i].SGPA << endl;
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No student found with SGPA " << sgpa << endl;
+    }
+}
+
+int main() {
+    const int MAX_STUDENTS = 15;
+    Student students[MAX_STUDENTS];
+    int numStudents = 0;
+
+    while (true) {
+        cout << "1. Add Student\n2. Find Top Ten Students\n3. Search by SGPA\n4. Exit\nEnter your choice: ";
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                if (numStudents < MAX_STUDENTS) {
+                    cout << "Enter Roll No: ";
+                    cin >> students[numStudents].rollNo;
+                    cout << "Enter Name: ";
+                    cin.ignore();
+                    getline(cin, students[numStudents].name);
+                    cout << "Enter SGPA: ";
+                    cin >> students[numStudents].SGPA;
+                    numStudents++;
+                } else {
+                    cout << "Maximum limit reached!\n";
+                }
+                break;
+
+            case 2:
+                if (numStudents > 0) {
+                    findTopTen(students, numStudents);
+                } else {
+                    cout << "No students in the database!\n";
+                }
+                break;
+
+            case 3:
+                if (numStudents > 0) {
+                    float searchSGPA;
+                    cout << "Enter SGPA to search: ";
+                    cin >> searchSGPA;
+                    searchBySGPA(students, numStudents, searchSGPA);
+                } else {
+                    cout << "No students in the database!\n";
+                }
+                break;
+
+            case 4:
+                cout << "Exiting the program...\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice! Please enter a valid option.\n";
+        }
+    }
+
+    return 0;
+}
